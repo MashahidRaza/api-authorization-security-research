@@ -1,7 +1,7 @@
 GET /api/MobileApp/GetAttendanceByUserId?userId=14324&date=01-01-2026 HTTP/2
 Host: api.inspirertechnologies.com
 Sec-Ch-Ua-Platform: "macOS"
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzMzMzMy0zMzMzMzMzLTMiLCJqdGkiOiJlMTkyNWRhMC04YjFhLTRhYjEtOWE5Ny1lMzk0MzViNjU5YmEiLCJleHAiOjE3ODk2NTA1MDIsImlzcyI6IllvdXJJc3N1ZXIiLCJhdWQiOiJZb3VyQXVkaWVuY2UifQ.WWnGBHwLnngJHPEGaWVcdILlFnHAYmigDIUwgwo1N0o
+Authorization: Bearer eyJhbGci....
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/152.0.0.0 Safari/537.36
 Accept: */*
 Sec-Ch-Ua: "Chromium";v="152", "Not?A_Brand";v="24", "Google Chrome";v="152"

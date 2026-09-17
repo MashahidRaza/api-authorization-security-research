@@ -1,0 +1,7 @@
+HTTP/2 200 OK
+Content-Type: application/json; charset=utf-8
+Server: Microsoft-IIS/10.0
+Date: Thu, 17 Sep 2026 12:32:15 GMT
+
+{"overAll":[{"userId”:testuser,”userName”:”testuser,”studentCode”:test user,”attendanceMonth":1,"monthName":"January","attendanceYear":2026,"workingDays":2,"presentDays":2,"attendancePercentage":100},{"userId":14321,"userName":"inspirer10042@inspirer.edu.pk","studentCode":10042,"attendanceMonth":2,"monthName":"February","attendanceYear":2026,"workingDays":1,"presentDays":1,"attendancePercentage":100}],"mobileStudentAttendanceDtos":[{"attendanceTypeId":2,"attendanceType":"Late (Unauthorized)","alias":"L","studentId":0,"attnDate":"2026-01-27T00:00:00","attendanceMonth":1,"attendanceYear":2026},{"attendanceTypeId":12,"attendanceType":"Early Dismissal 11:30-1:30 Authorized","alias":"D","studentId":0,"attnDate":"2026-01-28T00:00:00","attendanceMonth":1,"attendanceYear":2026}],"isSuccess":true,"message":"Success","successCode":0}
+

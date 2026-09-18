@@ -2,36 +2,105 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Api.Controllers
+namespace SecureApi.Controllers
 {
     [ApiController]
-    [Route("api/MobileApp")]
-    [Authorize] // Enforces authentication
-    public class MobileAppController : ControllerBase
+    [Route("api/attendance")]
+    [Authorize]
+    public class GetAttendanceController : ControllerBase
     {
-        [HttpGet("GetAttendanceByUserId")]
-        public IActionResult GetAttendanceByUserId([FromQuery] string userId, [FromQuery] string date)
+        [HttpGet("by-user")]
+        public IActionResult GetAttendanceByUserId(
+            [FromQuery] int userId,
+            [FromQuery] string date)
         {
-            // Extract the authenticated User ID directly from the JWT sub/NameIdentifier claim
-            var tokenUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value 
-                              ?? User.FindFirst("sub")?.Value;
+            /*
+             * SECURE IMPLEMENTATION
+             *
+             * The endpoint requires authentication and verifies that
+             * the requested userId matches the authenticated identity.
+             */
 
-            // BOLA Mitigation: Validate that the requested userId matches the JWT claim ID
-            if (string.IsNullOrEmpty(tokenUserId) || !tokenUserId.Equals(userId, StringComparison.OrdinalIgnoreCase))
+            var authenticatedUserId =
+                User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                ?? User.FindFirst("sub")?.Value;
+
+            if (!int.TryParse(authenticatedUserId, out var tokenUserId))
             {
-                // Return 403 Forbidden if an authenticated user attempts to read another user's data
-                return StatusCode(403, new { message = "Forbidden: Unauthorized access to target resource." });
+                return Unauthorized(new
+                {
+                    message = "The authenticated identity is missing or invalid."
+                });
             }
 
-            // Proceed with fetching attendance data safely
+            /*
+             * Object-level authorization check.
+             *
+             * A normal user may access only their own attendance data.
+             */
+
+            if (tokenUserId != userId)
+            {
+                return StatusCode(403, new
+                {
+                    message = "Forbidden: access to this object is not allowed."
+                });
+            }
+
             var attendanceData = FetchAttendanceFromDatabase(userId, date);
+
             return Ok(attendanceData);
         }
 
-        private object FetchAttendanceFromDatabase(string userId, string date)
+        private static object FetchAttendanceFromDatabase(
+            int userId,
+            string date)
         {
-            // Database lookup logic
-            return new { userId = userId, status = "Success" };
+            /*
+             * The secure API uses the same synthetic data as the
+             * vulnerable API. The important difference is the
+             * authorization check before this method is called.
+             */
+
+            var records = new[]
+            {
+                new
+                {
+                    UserId = 1001,
+                    StudentName = "Synthetic User A",
+                    Date = "2026-01-01",
+                    AttendanceStatus = "Present"
+                },
+                new
+                {
+                    UserId = 1002,
+                    StudentName = "Synthetic User B",
+                    Date = "2026-01-01",
+                    AttendanceStatus = "Absent"
+                }
+            };
+
+            var result = records.FirstOrDefault(
+                record => record.UserId == userId &&
+                          record.Date == date);
+
+            if (result == null)
+            {
+                return new
+                {
+                    UserId = userId,
+                    Date = date,
+                    Records = Array.Empty<object>()
+                };
+            }
+
+            return new
+            {
+                UserId = result.UserId,
+                StudentName = result.StudentName,
+                Date = result.Date,
+                AttendanceStatus = result.AttendanceStatus
+            };
         }
     }
 }

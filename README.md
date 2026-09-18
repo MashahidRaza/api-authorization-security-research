@@ -1,44 +1,46 @@
 # api-authorization-security-research
 Research-driven REST API security project for detecting and remediating Broken Object Level Authorization (BOLA) using authenticated differential testing, Burp Suite, and automated security validation
-# API Authorization Security Research: BOLA / IDOR
+# Authenticated API Authorization Assessment & Automated BOLA Detection
 
-## Executive Summary
-During security research on the target API (`api.inspirertechnologies.com`), a **Broken Object Level Authorization (BOLA)** / **Insecure Direct Object Reference (IDOR)** vulnerability was identified in the `GetAttendanceByUserId` endpoint. 
+A research-oriented Application Security project investigating whether authenticated differential testing of REST API object identifiers can identify Broken Object Level Authorization (BOLA).
 
-An authenticated user can view attendance records and personal identifiers of other users simply by changing the `userId` parameter in the HTTP GET request.
-
----
-
-## Vulnerability Details
-
-* **Vulnerability Class:** Broken Object Level Authorization (OWASP API Security Top 10 - API1:2023)
-* **Vulnerable Endpoint:** `GET /api/MobileApp/GetAttendanceByUserId`
-* **Vulnerable Parameter:** `userId`
-* **Authentication Required:** Yes (Valid Bearer JWT Token)
+The project combines manual API security testing, controlled vulnerable/secure implementations, automated differential testing, remediation, and experimental evaluation.
 
 ---
 
-## Proof of Concept (PoC)
+## Research Focus
 
-1. **Baseline Request (`userId=14321`):**
-   * An authenticated user sends a valid request for their own attendance data.
-   * **Evidence:** `evidence/02-burp-baseline/request.txt` & `response.txt`
-   * **User Returned:** `inspirer10042@inspirer.edu.pk`
+### Primary Question
 
-2. **Parameter Tampering (`userId=14324`):**
-   * The attacker keeps their own Bearer JWT token but changes `userId` to `14324` in the query string.
-   * **Evidence:** `evidence/03-burp-object-id-change/request_2.txt` & `response_2.txt`
-   * **User Returned:** `inspirer10044@inspirer.edu.pk`
+**Can authenticated differential manipulation of REST API object identifiers reliably detect Broken Object Level Authorization (BOLA) in a controlled API environment?**
 
-3. **Impact:**
-   * Full access to sensitive attendance logs, student codes, and user details across the tenant without proper authorization enforcement.
+### Hypothesis
+
+If a REST API fails to enforce server-side object-level authorization, changing an object identifier while keeping the authenticated identity constant may allow access to an object owned by another user.
+
+A properly authorized implementation should deny the cross-object request.
 
 ---
 
-## Remediation & Patch Recommendation
+# Project Method
 
-To fix this vulnerability, implement object-level authorization checks in the backend controller before querying the database:
+The project follows the workflow:
 
-1. Extract the authenticated user's ID directly from the validated JWT claims (`User.FindFirst("sub")` or similar).
-2. Ensure the requested `userId` parameter matches the JWT claim ID before processing the database query.
-3. If the IDs do not match and the requesting user lacks elevated administrative rights, return a `403 Forbidden` response.
+```text
+Real-World Security Observation
+              ↓
+       Security Hypothesis
+              ↓
+    Controlled Local Reproduction
+              ↓
+       Vulnerable API
+              ↓
+      Differential Testing
+              ↓
+     Automated Detection
+              ↓
+     Server-Side Remediation
+              ↓
+          Re-Testing
+              ↓
+     Experimental Evaluation
